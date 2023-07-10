@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id        String            @id
+  projects  UsersOnProjects[]
+  questions Questions[]
+  coins     Int               @default(10)
+  bets      UsersOnBets[]
+}
+
+model Guilds {
+  id String @id
+
+  ticketCategory   String @default("") @map("ticket_category")
+  moderationRole   String @default("") @map("moderation_role")
+  imageOnlyChannel String @default("") @map("image_only_channel")
+  logsChannel      String @default("") @map("logs_channel")
+  questionsChannel String @default("") @map("questions_channel")
+}
+
+model Questions {
+  id Int @id @default(autoincrement())
+
+  content   String
+  messageId String @map("message_id")
+  author    Users  @relation(fields: [authorId], references: [id])
+  authorId  String
+}
+
+model Projects {
+  id Int @id @default(autoincrement())
+
+  name        String
+  description String
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  participants UsersOnProjects[]
+}
+
+model Bets {
+  id           Int           @id @default(autoincrement())
+  optionA      String
+  optionB      String
+  deposit      Int
+  participants UsersOnBets[]
+  createdAt    DateTime      @default(now()) @map("created_at")
+}
+
+model UsersOnBets {
+  bet    Bets   @relation(fields: [betId], references: [id])
+  betId  Int
+  user   Users  @relation(fields: [userId], references: [id])
+  userId String
+
+  amount Int
+  option String
+
+  @@id([userId, betId])
+}
+
+model UsersOnProjects {
+  project   Projects @relation(fields: [projectId], references: [id])
+  projectId Int
+  user      Users    @relation(fields: [userId], references: [id])
+  userId    String
+
+  @@id([userId, projectId])
+}
