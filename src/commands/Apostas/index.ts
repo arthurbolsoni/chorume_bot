@@ -125,6 +125,13 @@ const ApostasCommand: ICommand = {
 
         const userData = await userService.getUserData(interaction.user.id);
 
+        if (userData.coins < betAmount) {
+          return await interaction.reply({
+            content: `**Oops!** Você não tem coins suficientes para esta aposta. Você tem **${userData.coins}**`,
+            ephemeral: true,
+          });
+        }
+
         await betService
           .addUserToBet({
             betId,
@@ -237,27 +244,20 @@ const ApostasCommand: ICommand = {
           (x) => x.option !== betToCloseWinner
         );
 
-        // quantidade total a ser distruibuida para os vencedores
-        const soma_apostas_grupo_perdedor = betLossers.reduce((acc, curr) => acc + curr.amount, 0);
-        
-        const soma_apostas_grupo_vencedor = betWinners.reduce((acc, curr) => acc + curr.amount, 0);
+        // quantidade total apostada pelos perdedores
+        const soma_apostas_grupo_perdedor = betLossers.reduce((acc, curr) => acc + curr.amount, 0); // 50
 
-
-        // porcentagem_pessoal = quantidade_apostada_da_pessoa_do_grupo_vencedor/soma_apostas_grupo_vencedor
-
-        // quantidade_a_receber = soma_apostas_perdedoras * porcentagem_pessoal 
-        console.log("vendedores Objet", betWinners)
-        console.log("perdedores Objet", betLossers)
-        console.log("bet amount perdedores", soma_apostas_grupo_perdedor)
-        console.log("bet amount vencedores", soma_apostas_grupo_perdedor)
+        // quantidade total apostada pelos vencedores
+        const soma_apostas_grupo_vencedor = betWinners.reduce((acc, curr) => acc + curr.amount, 0); // 100
 
         // porcentagem de cada vencedor
         const betWinnersPercentage = betWinners.map((x) => {
-          const quantidade_apostada_da_pessoa_do_grupo_vencedor = x.amount;
+          const quantidade_apostada_da_pessoa_do_grupo_vencedor = x.amount; // 10
 
-          const porcentagem_pessoal = quantidade_apostada_da_pessoa_do_grupo_vencedor / soma_apostas_grupo_vencedor;
-          const quantidade_a_receber = soma_apostas_grupo_perdedor * porcentagem_pessoal;
+          const porcentagem_pessoal = quantidade_apostada_da_pessoa_do_grupo_vencedor / soma_apostas_grupo_vencedor; // 10 / 100 = 0.1
+          const quantidade_a_receber = soma_apostas_grupo_perdedor * porcentagem_pessoal; // 50 * 0.1 = 5
 
+          // soma da aposta do grupo vendedor
           return {
             userId: x.userId,
             quantidade_ganha: quantidade_a_receber + x.amount // adiciona o valor que a pessoa apostou e ganhou
