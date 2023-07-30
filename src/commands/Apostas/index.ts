@@ -268,10 +268,12 @@ const ApostasCommand: ICommand = {
         }
 
         await interaction.reply(
-          `**BET ENCERRADA!** \nNúmero ${targetBetData.id}\n**A:** ${targetBetData.optionA
-          } vs **B:** ${targetBetData.optionB}\n**Apostas:** ${targetBetParticipants.length
-          }\n**Ganhadores:** ${betWinners.length
-          }\n**Acumulado**: ${Intl.NumberFormat(undefined, {
+          `**BET ENCERRADA!**\n
+          Número ${targetBetData.id}\n
+          **A:** ${targetBetData.optionA} vs **B:** ${targetBetData.optionB}\n
+          **Apostas:** ${targetBetParticipants.length}\n
+          **Ganhadores:** ${betWinners.length}\n
+          **Acumulado**: ${Intl.NumberFormat(undefined, {
             notation: "compact",
           }).format(soma_apostas_grupo_perdedor)}`
         );
