@@ -265,7 +265,7 @@ const ApostasCommand: ICommand = {
             winner.userId,
             winner.quantidade_ganha
           );
-        });
+        }
 
         await interaction.reply(
           `**BET ENCERRADA!** \nNúmero ${targetBetData.id}\n**A:** ${targetBetData.optionA
