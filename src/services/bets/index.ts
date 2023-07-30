@@ -14,7 +14,7 @@ class BetService {
     if (!betAmount){
       throw new Error("Você precisa apostar uma quantia!");
     }
-    
+
     if (betAmount <= 0) {
       throw new Error("Você não pode apostar uma quantia negativa!");
     }

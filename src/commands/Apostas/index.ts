@@ -82,6 +82,7 @@ const ApostasCommand: ICommand = {
           input
             .setName("coins")
             .setDescription("Valor para apostar")
+            .setMinValue(1)
             .setRequired(true)
         )
     )
