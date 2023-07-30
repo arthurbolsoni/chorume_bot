@@ -125,13 +125,6 @@ const ApostasCommand: ICommand = {
 
         const userData = await userService.getUserData(interaction.user.id);
 
-        if (userData.coins < betAmount) {
-          return await interaction.reply({
-            content: `**Oops!** Você não tem coins suficientes para esta aposta. Você tem **${userData.coins}**`,
-            ephemeral: true,
-          });
-        }
-
         await betService
           .addUserToBet({
             betId,
