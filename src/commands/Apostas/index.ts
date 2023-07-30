@@ -238,7 +238,9 @@ const ApostasCommand: ICommand = {
         );
 
         // quantidade total a ser distruibuida para os vencedores
-        const betAmountLossers = betLossers.reduce((acc, curr) => acc + curr.amount, 0);
+        const soma_apostas_grupo_perdedor = betLossers.reduce((acc, curr) => acc + curr.amount, 0);
+        
+        const soma_apostas_grupo_vencedor = betWinners.reduce((acc, curr) => acc + curr.amount, 0);
 
 
         // porcentagem_pessoal = quantidade_apostada_da_pessoa_do_grupo_vencedor/soma_apostas_grupo_vencedor
@@ -246,16 +248,15 @@ const ApostasCommand: ICommand = {
         // quantidade_a_receber = soma_apostas_perdedoras * porcentagem_pessoal 
         console.log("vendedores Objet", betWinners)
         console.log("perdedores Objet", betLossers)
-        console.log("bet amount perdedores", betAmountLossers)
-        console.log("bet amount vencedores", betAmountLossers)
+        console.log("bet amount perdedores", soma_apostas_grupo_perdedor)
+        console.log("bet amount vencedores", soma_apostas_grupo_perdedor)
 
         // porcentagem de cada vencedor
         const betWinnersPercentage = betWinners.map((x) => {
-          const soma_apostas_grupo_vencedor = betWinners.reduce((acc, curr) => acc + curr.amount, 0);
           const quantidade_apostada_da_pessoa_do_grupo_vencedor = x.amount;
 
           const porcentagem_pessoal = quantidade_apostada_da_pessoa_do_grupo_vencedor / soma_apostas_grupo_vencedor;
-          const quantidade_a_receber = betAmountLossers * porcentagem_pessoal;
+          const quantidade_a_receber = soma_apostas_grupo_perdedor * porcentagem_pessoal;
 
           return {
             userId: x.userId,
@@ -278,7 +279,7 @@ const ApostasCommand: ICommand = {
           }\n**Ganhadores:** ${betWinners.length
           }\n**Acumulado**: ${Intl.NumberFormat(undefined, {
             notation: "compact",
-          }).format(betAmountLossers)}`
+          }).format(soma_apostas_grupo_perdedor)}`
         );
 
 
