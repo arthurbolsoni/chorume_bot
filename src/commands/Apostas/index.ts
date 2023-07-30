@@ -272,7 +272,7 @@ const ApostasCommand: ICommand = {
           }\n**Ganhadores:** ${betWinners.length
           }\n**Acumulado**: ${Intl.NumberFormat(undefined, {
             notation: "compact",
-          }).format(betAmountLossers)}
+          }).format(betAmountLossers)}`
         );
 
 
