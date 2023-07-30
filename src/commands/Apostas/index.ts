@@ -260,10 +260,10 @@ const ApostasCommand: ICommand = {
 
         console.log("porcentagem de cada vencedor", betWinnersPercentage)
 
-        betWinnersPercentage.forEach(async (winners) => {
-          userService.addCoins(
-            winners.userId,
-            winners.quantidade_ganha
+        for (const winner of betWinnersPercentage) {
+          await userService.addCoins(
+            winner.userId,
+            winner.quantidade_ganha
           );
         });
 
