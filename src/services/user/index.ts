@@ -49,11 +49,12 @@ class UserService {
           in: ids,
         },
       },
-    });
+    },
+    );
   }
 
   async addCoins(userId: string, amount: number) {
-    await this.getUserData(userId);
+    // await this.getUserData(userId);
 
     await database.users
       .update({

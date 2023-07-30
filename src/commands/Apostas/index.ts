@@ -233,24 +233,33 @@ const ApostasCommand: ICommand = {
           (x) => x.option === betToCloseWinner
         );
 
-        // adiciona as coins aos vencedores da aposta, caso erro no banco, retorna
-        const betWinnersIds = betWinners.map((x) => x.userId);
-        await userService.addCoinsToIds(
-          betWinnersIds,
-          Math.round(targetBetData.deposit / betWinners.length)
-        ).catch(async (err) => {
-          console.log(err);
-          throw new Error("Não foi possível adicionar as coins aos vencedores. Banco de dados indisponível.");
+        const betLossers = await targetBetParticipants.filter(
+          (x) => x.option !== betToCloseWinner
+        );
+
+        // quantidade total a ser distruibuida para os vencedores
+        const betAmountLossers = betLossers.reduce((acc, curr) => acc + curr.amount, 0);
+
+
+        // porcentagem_pessoal = quantidade_apostada_da_pessoa_do_grupo_vencedor/soma_apostas_grupo_vencedor
+
+        // quantidade_a_receber = soma_apostas_perdedoras * porcentagem_pessoal 
+
+        // porcentagem de cada vencedor
+        const betWinnersPercentage = betWinners.map((x) => {
+          const porcentagem_ganha = (x.amount / betAmountLossers) * betAmountLossers;
+          return {
+            userId: x.userId,
+            quantidade_ganha: porcentagem_ganha + x.amount // adiciona o valor que a pessoa apostou e ganhou
+          }
         });
 
-        // for (let i = 0; i < betWinners.length; i++) {
-        //   const userBetData = betWinners[i];
-
-        //   userService.addCoins(
-        //     userBetData.userId,
-        //     Math.round( (targetBetData.deposit / betWinners.length) + userBetData.amount )
-        //   );
-        // }
+        betWinnersPercentage.forEach(async (winners) => {
+          userService.addCoins(
+            winners.userId,
+            winners.quantidade_ganha
+          );
+        });
 
         await interaction.reply(
           `**BET ENCERRADA!** \nNúmero ${targetBetData.id}\n**A:** ${targetBetData.optionA
@@ -258,7 +267,7 @@ const ApostasCommand: ICommand = {
           }\n**Ganhadores:** ${betWinners.length
           }\n**Acumulado**: ${Intl.NumberFormat(undefined, {
             notation: "compact",
-          }).format(targetBetData.deposit)}`
+          }).format(betAmountLossers)}`
         );
 
 
