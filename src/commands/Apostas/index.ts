@@ -99,19 +99,18 @@ const ApostasCommand: ICommand = {
 
         availableBets.length > 0
           ? availableBets.map((bet) => {
-              availableBetsEmbed.addFields({
-                name: `Número ${bet.id}`,
-                value: `**OPÇÃO A:** ${bet.optionA}\n **OPÇÃO B:** ${
-                  bet.optionB
+            availableBetsEmbed.addFields({
+              name: `Número ${bet.id}`,
+              value: `**OPÇÃO A:** ${bet.optionA}\n **OPÇÃO B:** ${bet.optionB
                 }\nACUMULADO: **${new Intl.NumberFormat(undefined, {
                   notation: "compact",
                 }).format(bet.deposit)}**`,
-              });
-            })
-          : availableBetsEmbed.addFields({
-              name: "Oops",
-              value: "Nenhuma bet aberta no momento",
             });
+          })
+          : availableBetsEmbed.addFields({
+            name: "Oops",
+            value: "Nenhuma bet aberta no momento",
+          });
 
         await interaction.reply({
           embeds: [availableBetsEmbed],
@@ -147,9 +146,8 @@ const ApostasCommand: ICommand = {
             userService.removeCoins(interaction.user.id, Number(betAmount));
 
             return await interaction.reply({
-              content: `**OK!** Você apostou **${betAmount}** chorume coins na **${
-                betOption == "option_a" ? "Opção A" : "Opção B"
-              }**`,
+              content: `**OK!** Você apostou **${betAmount}** chorume coins na **${betOption == "option_a" ? "Opção A" : "Opção B"
+                }**`,
               ephemeral: true,
             });
           })
@@ -235,28 +233,34 @@ const ApostasCommand: ICommand = {
           (x) => x.option === betToCloseWinner
         );
 
+        // adiciona as coins aos vencedores da aposta, caso erro no banco, retorna
+        const betWinnersIds = betWinners.map((x) => x.userId);
+        await userService.addCoinsToIds(
+          betWinnersIds,
+          Math.round(targetBetData.deposit / betWinners.length)
+        ).catch(async (err) => {
+          console.log(err);
+          throw new Error("Não foi possível adicionar as coins aos vencedores. Banco de dados indisponível.");
+        });
+
+        // for (let i = 0; i < betWinners.length; i++) {
+        //   const userBetData = betWinners[i];
+
+        //   userService.addCoins(
+        //     userBetData.userId,
+        //     Math.round( (targetBetData.deposit / betWinners.length) + userBetData.amount )
+        //   );
+        // }
+
         await interaction.reply(
-          `**BET ENCERRADA!** \nNúmero ${targetBetData.id}\n**A:** ${
-            targetBetData.optionA
-          } vs **B:** ${targetBetData.optionB}\n**Apostas:** ${
-            targetBetParticipants.length
-          }\n**Ganhadores:** ${
-            betWinners.length
+          `**BET ENCERRADA!** \nNúmero ${targetBetData.id}\n**A:** ${targetBetData.optionA
+          } vs **B:** ${targetBetData.optionB}\n**Apostas:** ${targetBetParticipants.length
+          }\n**Ganhadores:** ${betWinners.length
           }\n**Acumulado**: ${Intl.NumberFormat(undefined, {
             notation: "compact",
           }).format(targetBetData.deposit)}`
         );
 
-        for (let i = 0; i < betWinners.length; i++) {
-          const userBetData = betWinners[i];
-
-          userService.addCoins(
-            userBetData.userId,
-            Math.round(
-              (targetBetData.deposit / betWinners.length) + userBetData.amount
-            )
-          );
-        }
 
         await betService.deleteBet(targetBetData.id);
 
