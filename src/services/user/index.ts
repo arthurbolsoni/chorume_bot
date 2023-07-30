@@ -36,23 +36,6 @@ class UserService {
     });
   }
 
-
-  async addCoinsToIds(ids: string[], amount: number) {
-    await database.users.updateMany({
-      data: {
-        coins: {
-          increment: amount,
-        },
-      },
-      where: {
-        id: {
-          in: ids,
-        },
-      },
-    },
-    );
-  }
-
   async addCoins(userId: string, amount: number) {
     // await this.getUserData(userId);
 
@@ -60,7 +43,7 @@ class UserService {
       .update({
         data: {
           coins: {
-            increment: amount,
+            increment: Math.round(amount),
           },
         },
         where: {
