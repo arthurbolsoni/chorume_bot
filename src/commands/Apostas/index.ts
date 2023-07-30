@@ -246,9 +246,9 @@ const ApostasCommand: ICommand = {
 
         // porcentagem de cada vencedor
         const betWinnersPercentage = betWinners.map((x) => {
-          const quantidade_apostada_da_pessoa_do_grupo_vencedor = x.amount; // 10
+          const quantidade_apostado = x.amount; // 10
 
-          const porcentagem_pessoal = quantidade_apostada_da_pessoa_do_grupo_vencedor / soma_apostas_grupo_vencedor; // 10 / 100 = 0.1
+          const porcentagem_pessoal = quantidade_apostado / soma_apostas_grupo_vencedor; // 10 / 100 = 0.1
           const quantidade_a_receber = soma_apostas_grupo_perdedor * porcentagem_pessoal; // 50 * 0.1 = 5
 
           // soma da aposta do grupo vendedor
